@@ -1,6 +1,6 @@
 const OpenAI = require("openai");
 
-const openai = new OpenAI({ apiKey: 'My API Key' });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function getGPTAnalysis(entryText, systemPrompt) {
     const response = await openai.chat.completions.create({

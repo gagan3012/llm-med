@@ -30,11 +30,10 @@ function DiaryForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(entry);
         try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/entries', entry, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const token = "cdab881c230d7ce758c7195694f10729bcbc6dfce5e9a40850f79b5a8797a2b8c3d9b5a82eac8d72d330374367b497859829d84febdbbf8e0533f7bc12de0a17";
+            await axios.post('http://localhost:5000/api/entries', entry);
             alert('Entry submitted successfully');
         } catch (error) {
             console.error('Error submitting entry:', error);
@@ -65,7 +64,7 @@ function DiaryForm() {
                 Add Medication
             </button>
             <textarea name="notes" value={entry.notes} onChange={handleChange} placeholder="Notes" />
-            <button type="submit">Submit Entry</button>
+            <button type="submit" onClick={handleSubmit}>Submit Entry</button>
         </form>
     );
 }

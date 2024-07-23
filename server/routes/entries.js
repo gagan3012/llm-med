@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
 const { getGPTAnalysis } = require('../utils/gpt');
 const { writeEntry, findEntriesByUser, updateEntry } = require('../utils/csvDatabase');
 
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const entryData = { ...req.body, user: req.user.id };
+        const entryData = { ...req.body, user: req.user ? req.user.id : null };
+        entryData.triggers = entryData.triggers || [];
+        entryData.symptoms = entryData.symptoms || [];
+        entryData.medications = entryData.medications || [];
         const entryText = `Date: ${entryData.date}\nPain Level: ${entryData.painLevel}\nDuration: ${entryData.duration}\nTriggers: ${entryData.triggers.join(', ')}\nSymptoms: ${entryData.symptoms.join(', ')}\nMedications: ${entryData.medications.map(m => `${m.name} (${m.dosage})`).join(', ')}\nNotes: ${entryData.notes}`;
 
         const doctorAnalysis = await getGPTAnalysis(entryText, "You are a neurologist specializing in migraine management. Provide a technical analysis of the patient's migraine diary entry, including potential correlations, patterns, and suggestions for the treating physician.");
@@ -24,16 +26,16 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const entries = await findEntriesByUser(req.user.id);
+        const entries = await findEntriesByUser(req.user ? req.user.id : null);
         res.send(entries);
     } catch (error) {
         res.status(500).send(error.message);
     }
 });
 
-router.post('/:id/doctornotes', auth, async (req, res) => {
+router.post('/:id/doctornotes', async (req, res) => {
     try {
         const entry = await updateEntry(req.params.id, { doctorNotes: req.body.notes });
         if (!entry) {
@@ -45,7 +47,7 @@ router.post('/:id/doctornotes', auth, async (req, res) => {
     }
 });
 
-router.post('/:id/advicerating', auth, async (req, res) => {
+router.post('/:id/advicerating', async (req, res) => {
     try {
         const entry = await updateEntry(req.params.id, {
             adviceTried: JSON.stringify([...JSON.parse(entry.adviceTried || '[]'), {

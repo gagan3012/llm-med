@@ -12,10 +12,8 @@ function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const entriesResponse = await axios.get('http://localhost:5000/api/entries', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const token = "cdab881c230d7ce758c7195694f10729bcbc6dfce5e9a40850f79b5a8797a2b8c3d9b5a82eac8d72d330374367b497859829d84febdbbf8e0533f7bc12de0a17";
+                const entriesResponse = await axios.get('http://localhost:5000/api/entries', );
                 setEntries(entriesResponse.data);
 
                 const statsResponse = await axios.get('http://localhost:5000/api/summary', {
